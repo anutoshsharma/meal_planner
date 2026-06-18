@@ -18,6 +18,7 @@ interface PlanEntry {
   meal_type: 'breakfast' | 'lunch' | 'dinner';
   dish_id: string;
   dish_name: string;
+  prep_instructions?: string | null;
 }
 
 export default function DashboardPage() {
@@ -58,19 +59,23 @@ export default function DashboardPage() {
 
     const dishesResult = await supabase
       .from('dishes')
-      .select('id, name');
+      .select('id, name, prep_instructions');
 
-    type DishNameResult = { id: string; name: string };
-    const dishMap = new Map<string, string>();
-    (dishesResult.data as DishNameResult[] | null)?.forEach(dish => dishMap.set(dish.id, dish.name));
+    type DishNameResult = { id: string; name: string; prep_instructions?: string | null };
+    const dishMap = new Map<string, { name: string; prep_instructions?: string | null }>();
+    (dishesResult.data as DishNameResult[] | null)?.forEach(dish => dishMap.set(dish.id, { name: dish.name, prep_instructions: dish.prep_instructions }));
 
     setTodayPlan(
-      (data ?? []).map(item => ({
-        meal_date: item.meal_date,
-        meal_type: item.meal_type,
-        dish_id: item.dish_id,
-        dish_name: dishMap.get(item.dish_id) ?? 'Unknown dish',
-      }))
+      (data ?? []).map(item => {
+        const dish = dishMap.get(item.dish_id);
+        return {
+          meal_date: item.meal_date,
+          meal_type: item.meal_type,
+          dish_id: item.dish_id,
+          dish_name: dish?.name ?? 'Unknown dish',
+          prep_instructions: dish?.prep_instructions ?? null,
+        };
+      })
     );
 
     setLoading(false);
