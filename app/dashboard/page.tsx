@@ -217,6 +217,9 @@ export default function DashboardPage() {
                       <p className="text-sm font-semibold text-slate-700 uppercase tracking-[0.24em]">{type}</p>
                       <span className="rounded-full bg-white px-3 py-1 text-xs text-slate-500">{entry?.dish_name ?? 'No plan'}</span>
                     </div>
+                    {entry?.prep_instructions && (
+                      <p className="mt-3 text-sm text-slate-600">Prep: {entry.prep_instructions}</p>
+                    )}
                   </div>
                 );
               })}
