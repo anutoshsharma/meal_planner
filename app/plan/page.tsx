@@ -97,7 +97,7 @@ export default function PlanPage() {
 
     const { error } = await supabase
       .from('meal_plan')
-      .upsert({ user_id: session.user.id, meal_date: date, meal_type, dish_id }, { onConflict: ['user_id', 'meal_date', 'meal_type'] });
+      .upsert({ user_id: session.user.id, meal_date: date, meal_type, dish_id }, { onConflict: 'user_id,meal_date,meal_type' });
 
     if (error) {
       setMessage(error.message);

@@ -163,7 +163,7 @@ export default function DashboardPage() {
             meal_type: entry.meal_type,
             dish_id: entry.dish_id,
           },
-          { onConflict: ['user_id', 'meal_date', 'meal_type'] }
+          { onConflict: 'user_id,meal_date,meal_type' }
         )
       )
     );
