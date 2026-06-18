@@ -43,7 +43,7 @@ export default function InventoryPage() {
 
     const inventoryResult = await supabase.from('inventory_items').select('*').eq('user_id', session.user.id).order('ingredient', { ascending: true });
     const planResult = await supabase.from('meal_plan').select('dish_id').eq('user_id', session.user.id).eq('meal_date', dateString);
-    const dishesResult = await supabase.from('dishes').select('id, ingredients').eq('user_id', session.user.id);
+    const dishesResult = await supabase.from('dishes').select('id, ingredients');
 
     if (inventoryResult.error || planResult.error || dishesResult.error) {
       setError(inventoryResult.error?.message ?? planResult.error?.message ?? dishesResult.error?.message ?? 'Unable to load inventory.');

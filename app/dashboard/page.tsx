@@ -58,8 +58,7 @@ export default function DashboardPage() {
 
     const dishesResult = await supabase
       .from('dishes')
-      .select('id, name')
-      .eq('user_id', session.user.id);
+      .select('id, name');
 
     type DishNameResult = { id: string; name: string };
     const dishMap = new Map<string, string>();
@@ -126,8 +125,7 @@ export default function DashboardPage() {
 
     const { data: dishData, error: dishError } = await supabase
       .from('dishes')
-      .select('id, name, meal_type')
-      .eq('user_id', session.user.id);
+      .select('id, name, meal_type');
 
     if (dishError) {
       setMessage(dishError.message);

@@ -65,7 +65,6 @@ export default function PlanPage() {
     const { data: dishData, error: dishError } = await supabase
       .from('dishes')
       .select('id, name, meal_type')
-      .eq('user_id', session.user.id)
       .order('name', { ascending: true });
 
     if (planError || dishError) {

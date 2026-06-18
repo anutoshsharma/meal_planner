@@ -123,7 +123,6 @@ export default function SearchPage() {
       diet_type: selectedDietType,
       ingredients,
       prep_instructions: meal.strInstructions?.slice(0, 250) ?? null,
-      user_id: session.user.id,
     });
 
     if (error) {
