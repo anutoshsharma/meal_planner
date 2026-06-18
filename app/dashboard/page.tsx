@@ -61,8 +61,9 @@ export default function DashboardPage() {
       .select('id, name')
       .eq('user_id', session.user.id);
 
+    type DishNameResult = { id: string; name: string };
     const dishMap = new Map<string, string>();
-    dishesResult.data?.forEach((dish: Dish) => dishMap.set(dish.id, dish.name));
+    (dishesResult.data as DishNameResult[] | null)?.forEach(dish => dishMap.set(dish.id, dish.name));
 
     setTodayPlan(
       (data ?? []).map(item => ({

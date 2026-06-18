@@ -74,8 +74,9 @@ export default function PlanPage() {
       return;
     }
 
+    type DishNameResult = { id: string; name: string };
     const dishMap = new Map<string, string>();
-    (dishData ?? []).forEach((dish: Dish) => dishMap.set(dish.id, dish.name));
+    (dishData as DishNameResult[] | null ?? []).forEach(dish => dishMap.set(dish.id, dish.name));
 
     setDishes(dishData ?? []);
     setPlan(

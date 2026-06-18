@@ -53,8 +53,9 @@ export default function InventoryPage() {
 
     setInventory(inventoryResult.data ?? []);
 
+    type DishIngredientsResult = { id: string; ingredients?: string[] | null };
     const dishMap = new Map<string, string[]>();
-    (dishesResult.data ?? []).forEach((dish: Dish) => dishMap.set(dish.id, dish.ingredients ?? []));
+    (dishesResult.data as DishIngredientsResult[] | null ?? []).forEach(dish => dishMap.set(dish.id, dish.ingredients ?? []));
 
     const ingredientList = (planResult.data ?? [])
       .flatMap((entry: { dish_id: string }) => dishMap.get(entry.dish_id) ?? [])
