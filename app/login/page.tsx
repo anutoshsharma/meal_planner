@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
 export default function LoginPage() {
@@ -94,7 +93,7 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <div className="mt-5 flex items-center justify-between text-sm text-slate-500">
+      <div className="mt-5 text-sm text-slate-500">
         <button
           type="button"
           onClick={() => setIsRegister(prev => !prev)}
@@ -102,9 +101,6 @@ export default function LoginPage() {
         >
           {isRegister ? 'Already have an account?' : 'Create a new account'}
         </button>
-        <Link href="/" className="text-slate-500 hover:text-slate-700">
-          Back home
-        </Link>
       </div>
     </div>
   );

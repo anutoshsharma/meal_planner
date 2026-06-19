@@ -41,7 +41,6 @@ export function AppShell({ children }: AppShellProps) {
             <Link href="/dashboard" className="text-lg font-semibold text-slate-900">
               Meal Planner
             </Link>
-            <p className="text-xs text-slate-500">PWA-ready planner · personal recipes · guest mode</p>
           </div>
 
           <nav className="flex flex-wrap items-center gap-2">
