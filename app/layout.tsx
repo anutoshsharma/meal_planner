@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Figtree } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -20,11 +20,13 @@ export const metadata: Metadata = {
   title: "Meal Planner",
   description: "Randomize meals, add dishes, and share your daily menu.",
   metadataBase: new URL('http://localhost:3000'),
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-  },
   manifest: '/manifest.json',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#10b981',
 };
 
 export default function RootLayout({
