@@ -86,7 +86,6 @@ export default function DishesPage() {
     const response = await generateRecipeWithAI(searchQuery, dietToggle, selectedChef, selectedCuisine);
     
     if (response.success && response.data) {
-      // Now response.data is an array of 3 recipes
       setSearchResults(response.data);
     } else {
       setMessage(response.error || 'Could not generate dishes. Try different ingredients.');
@@ -101,7 +100,6 @@ export default function DishesPage() {
       return;
     }
 
-    // IF MULTIPLE MEALS ARE SELECTED, WE SAVE IT AS A SINGLE "ANY" ENTRY TO PREVENT DUPLICATES
     const finalMealType = selectedMealTypesInModal.length > 1 ? 'any' : selectedMealTypesInModal[0];
 
     const { error } = await supabase.from('dishes').insert({
@@ -162,10 +160,29 @@ export default function DishesPage() {
     }
   };
 
+  // --- SMART FILTERING LOGIC ---
+  const filteredDishes = dishes.filter(dish => {
+    if (!dbFilter.trim()) return true;
+    
+    // Split the search string by spaces or commas, and ignore filler words
+    const searchTerms = dbFilter.toLowerCase().split(/[\s,]+/).filter(w => w && !['and', 'or', 'with'].includes(w));
+    
+    // Combine dish name and all ingredients into one massive searchable string
+    const searchableText = [
+      dish.name,
+      Array.isArray(dish.core_ingredients) ? dish.core_ingredients.join(' ') : dish.core_ingredients || '',
+      Array.isArray(dish.ingredients) ? dish.ingredients.join(' ') : dish.ingredients || ''
+    ].join(' ').toLowerCase();
+
+    // Ensure EVERY typed word is found somewhere in the dish
+    return searchTerms.every(term => searchableText.includes(term));
+  });
+
   return (
     <AppShell>
       <div className="space-y-6">
         
+        {/* DISCOVER DISHES (AI GENERATION) */}
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h1 className="text-2xl font-semibold text-slate-900">Discover Dishes</h1>
           <p className="mt-2 text-sm text-slate-500">Search by ingredients, cuisine, or dish name. The AI will generate multiple options.</p>
@@ -244,6 +261,7 @@ export default function DishesPage() {
           </div>
         </section>
 
+        {/* ALL DISHES (LOCAL DATABASE) */}
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-slate-900">All Dishes</h2>
@@ -253,14 +271,16 @@ export default function DishesPage() {
             value={dbFilter}
             onChange={e => setDbFilter(e.target.value)}
             className="w-full mb-6 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-slate-400"
-            placeholder="Search your saved dishes..."
+            placeholder="Search your saved dishes by name or ingredients (e.g. 'spinach tomato')..."
           />
 
           {loading ? (
             <p className="text-sm text-slate-500">Loading dishes...</p>
+          ) : filteredDishes.length === 0 ? (
+            <p className="text-sm text-slate-500">No dishes found matching "{dbFilter}".</p>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {dishes.filter(d => d.name.toLowerCase().includes(dbFilter.toLowerCase())).map(dish => (
+              {filteredDishes.map(dish => (
                 <div key={dish.id} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm flex flex-col justify-between">
                   <div>
                     <h3 className="font-semibold text-lg text-slate-900">{dish.name}</h3>
