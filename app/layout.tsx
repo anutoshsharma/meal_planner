@@ -1,32 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Figtree } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
-import PwaRegister from "@/components/PwaRegister";
+import { PwaRegister } from "@/components/PwaRegister";
 
-const figtree = Figtree({ subsets: ['latin'], variable: '--font-sans' });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Meal Planner",
-  description: "Randomize meals, add dishes, and share your daily menu.",
-  metadataBase: new URL('http://localhost:3000'),
-  manifest: '/manifest.json',
+  description: "Plan meals, discover recipes, and manage groceries.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Meal Planner",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export const viewport: Viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
-  themeColor: '#10b981',
+  maximumScale: 1, // Prevents annoying zoom on input focus in mobile
+  themeColor: "#10b981",
 };
 
 export default function RootLayout({
@@ -35,17 +32,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", figtree.variable)}
-    >
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#10b981" />
-      </head>
-      <body className="min-h-full flex flex-col">
-        {children}
+    <html lang="en">
+      <body className={inter.className}>
         <PwaRegister />
+        {children}
       </body>
     </html>
   );

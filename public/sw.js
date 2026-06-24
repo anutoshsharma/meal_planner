@@ -1,46 +1,49 @@
-// This service worker will immediately unregister itself when activated.
-const CACHE_NAME = 'meal-planner-cache-v1';
+const CACHE_NAME = 'meal-planner-cache-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.json',
-  '/next.svg',
   '/login',
   '/dashboard',
   '/dishes',
-  '/search',
   '/plan',
   '/inventory',
 ];
 
-self.addEventListener('install', event => {
-  // skip waiting so activate runs immediately
+// Install event - caches core files
+self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS_TO_CACHE)).catch(() => {})
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    }).catch((err) => console.log('Cache error', err))
   );
 });
 
-self.addEventListener('activate', event => {
-  // clear caches and unregister this service worker to avoid serving stale assets
+// Activate event - cleans up old caches
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    (async () => {
-      try {
-        const keys = await caches.keys();
-        await Promise.all(keys.map(k => caches.delete(k)));
-      } catch (e) {}
-      // unregister this worker
-      const reg = await self.registration.unregister();
-      // if unregister succeeded, claim clients so they reload without SW
-      if (reg) {
-        try { await self.clients.claim(); } catch (e) {}
-      }
-    })()
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
   );
+  self.clients.claim();
 });
 
-// Fallback fetch handler — try network first, then cache.
-self.addEventListener('fetch', event => {
+// Fetch event - Network-first strategy
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    fetch(event.request).catch(() => {
+      return caches.match(event.request).then((response) => {
+        return response || caches.match('/dashboard');
+      });
+    })
   );
 });
